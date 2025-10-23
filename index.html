@@ -1,0 +1,402 @@
+import React, { useState } from 'react';
+import { Check, X, Brain, BookOpen, Lightbulb, ArrowRight } from 'lucide-react';
+
+const ActivePassiveLearning = () => {
+  const [currentStep, setCurrentStep] = useState('intro');
+  const [score, setScore] = useState(0);
+  const [answeredQuestions, setAnsweredQuestions] = useState([]);
+  const [reflectionAnswers, setReflectionAnswers] = useState([]);
+
+  const scenarios = [
+    {
+      id: 1,
+      situation: "Reading through your textbook chapter highlighting important parts",
+      correct: "passive",
+      explanation: "While highlighting feels productive, it's often passive unless you're actively processing the information. Try summarizing each section in your own words instead!"
+    },
+    {
+      id: 2,
+      situation: "Creating a mind map to connect different concepts you've learned",
+      correct: "active",
+      explanation: "Excellent! Creating visual connections requires you to think deeply about relationships between ideas - that's active learning in action."
+    },
+    {
+      id: 3,
+      situation: "Watching a recorded lecture without taking notes",
+      correct: "passive",
+      explanation: "Simply watching content is passive consumption. To make it active, pause regularly to summarize, question, or predict what comes next."
+    },
+    {
+      id: 4,
+      situation: "Testing yourself with flashcards and explaining why each answer is correct",
+      correct: "active",
+      explanation: "Perfect example of active learning! Self-testing with explanation engages retrieval practice and deeper understanding."
+    },
+    {
+      id: 5,
+      situation: "Teaching a concept to a study partner or explaining it out loud",
+      correct: "active",
+      explanation: "Teaching others is one of the most powerful active learning strategies. It reveals gaps in your understanding and strengthens memory."
+    },
+    {
+      id: 6,
+      situation: "Re-reading your notes from class multiple times",
+      correct: "passive",
+      explanation: "Re-reading creates familiarity, not understanding. Try converting notes into questions or practice problems instead."
+    },
+    {
+      id: 7,
+      situation: "Solving practice problems and checking your work to understand mistakes",
+      correct: "active",
+      explanation: "Great! Working through problems and analyzing errors engages your brain actively and builds real understanding."
+    },
+    {
+      id: 8,
+      situation: "Listening to an educational podcast during your commute",
+      correct: "passive",
+      explanation: "Listening alone is passive. To make it active, pause to reflect on key points or discuss what you learned with someone afterward."
+    }
+  ];
+
+  const reflectionQuestions = [
+    "I usually re-read my notes multiple times before exams",
+    "I try to explain concepts in my own words",
+    "I prefer watching videos over doing practice problems",
+    "I regularly test myself without looking at my materials",
+    "I make connections between new and old information"
+  ];
+
+  const handleAnswer = (scenarioId, answer) => {
+    const scenario = scenarios.find(s => s.id === scenarioId);
+    const isCorrect = answer === scenario.correct;
+    
+    if (isCorrect) {
+      setScore(score + 1);
+    }
+    
+    setAnsweredQuestions([...answeredQuestions, { id: scenarioId, answer, isCorrect }]);
+  };
+
+  const handleReflection = (questionIndex, value) => {
+    const newAnswers = [...reflectionAnswers];
+    newAnswers[questionIndex] = value;
+    setReflectionAnswers(newAnswers);
+  };
+
+  const getReflectionScore = () => {
+    const activeIndicators = [false, true, false, true, true];
+    let activeCount = 0;
+    reflectionAnswers.forEach((answer, index) => {
+      if ((activeIndicators[index] && answer === 'often') || 
+          (!activeIndicators[index] && answer === 'rarely')) {
+        activeCount++;
+      }
+    });
+    return activeCount;
+  };
+
+  const IntroScreen = () => (
+    <div className="max-w-3xl mx-auto p-8">
+      <div className="text-center mb-8">
+        <Brain className="w-16 h-16 mx-auto mb-4 text-blue-600" />
+        <h1 className="text-4xl font-bold text-gray-800 mb-4">Active vs. Passive Learning</h1>
+        <p className="text-xl text-gray-600">Discover how you can learn more effectively</p>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-lg p-8 mb-6">
+        <h2 className="text-2xl font-semibold mb-4 text-gray-800">What's the Difference?</h2>
+        
+        <div className="grid md:grid-cols-2 gap-6 mb-6">
+          <div className="bg-red-50 p-6 rounded-lg border-2 border-red-200">
+            <div className="flex items-center mb-3">
+              <BookOpen className="w-6 h-6 text-red-600 mr-2" />
+              <h3 className="text-xl font-semibold text-red-800">Passive Learning</h3>
+            </div>
+            <p className="text-gray-700 mb-3">Receiving information without deep processing</p>
+            <ul className="text-sm text-gray-600 space-y-2">
+              <li>• Reading without summarizing</li>
+              <li>• Listening to lectures passively</li>
+              <li>• Highlighting text mindlessly</li>
+              <li>• Re-reading notes repeatedly</li>
+            </ul>
+          </div>
+
+          <div className="bg-green-50 p-6 rounded-lg border-2 border-green-200">
+            <div className="flex items-center mb-3">
+              <Lightbulb className="w-6 h-6 text-green-600 mr-2" />
+              <h3 className="text-xl font-semibold text-green-800">Active Learning</h3>
+            </div>
+            <p className="text-gray-700 mb-3">Engaging deeply with material through practice</p>
+            <ul className="text-sm text-gray-600 space-y-2">
+              <li>• Self-testing and retrieval practice</li>
+              <li>• Teaching others or explaining aloud</li>
+              <li>• Creating connections and examples</li>
+              <li>• Solving problems and analyzing errors</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+          <p className="text-gray-700 font-medium">
+            <strong>Research shows:</strong> Active learning leads to 50% better retention and deeper understanding compared to passive approaches!
+          </p>
+        </div>
+      </div>
+
+      <button
+        onClick={() => setCurrentStep('scenarios')}
+        className="w-full bg-blue-600 text-white py-4 rounded-lg font-semibold text-lg hover:bg-blue-700 transition flex items-center justify-center"
+      >
+        Start the Interactive Activity
+        <ArrowRight className="w-5 h-5 ml-2" />
+      </button>
+    </div>
+  );
+
+  const ScenariosScreen = () => {
+    const currentScenario = scenarios[answeredQuestions.length];
+    const lastAnswer = answeredQuestions[answeredQuestions.length - 1];
+
+    if (answeredQuestions.length === scenarios.length) {
+      return (
+        <div className="max-w-3xl mx-auto p-8">
+          <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+            <h2 className="text-3xl font-bold mb-4 text-gray-800">Great Job!</h2>
+            <p className="text-xl mb-4 text-gray-600">
+              You got <span className="text-blue-600 font-bold">{score}</span> out of {scenarios.length} correct!
+            </p>
+            <div className="mb-6">
+              <div className="w-full bg-gray-200 rounded-full h-4">
+                <div 
+                  className="bg-blue-600 h-4 rounded-full transition-all"
+                  style={{ width: `${(score / scenarios.length) * 100}%` }}
+                />
+              </div>
+            </div>
+            <button
+              onClick={() => setCurrentStep('reflection')}
+              className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+            >
+              Continue to Self-Reflection
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="max-w-3xl mx-auto p-8">
+        <div className="mb-6">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-medium text-gray-600">
+              Question {answeredQuestions.length + 1} of {scenarios.length}
+            </span>
+            <span className="text-sm font-medium text-gray-600">
+              Score: {score}/{answeredQuestions.length}
+            </span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-blue-600 h-2 rounded-full transition-all"
+              style={{ width: `${(answeredQuestions.length / scenarios.length) * 100}%` }}
+            />
+          </div>
+        </div>
+
+        {lastAnswer && (
+          <div className={`mb-6 p-4 rounded-lg border-2 ${lastAnswer.isCorrect ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-300'}`}>
+            <div className="flex items-start">
+              {lastAnswer.isCorrect ? (
+                <Check className="w-6 h-6 text-green-600 mr-3 flex-shrink-0 mt-1" />
+              ) : (
+                <X className="w-6 h-6 text-red-600 mr-3 flex-shrink-0 mt-1" />
+              )}
+              <div>
+                <p className={`font-semibold mb-1 ${lastAnswer.isCorrect ? 'text-green-800' : 'text-red-800'}`}>
+                  {lastAnswer.isCorrect ? 'Correct!' : 'Not quite!'}
+                </p>
+                <p className="text-gray-700 text-sm">
+                  {scenarios.find(s => s.id === lastAnswer.id).explanation}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="bg-white rounded-lg shadow-lg p-8">
+          <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+            Is this Active or Passive Learning?
+          </h2>
+          
+          <div className="bg-gray-50 p-6 rounded-lg mb-6 border-l-4 border-blue-600">
+            <p className="text-lg text-gray-800">
+              {currentScenario.situation}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <button
+              onClick={() => handleAnswer(currentScenario.id, 'active')}
+              className="bg-green-100 hover:bg-green-200 text-green-800 py-4 px-6 rounded-lg font-semibold text-lg transition border-2 border-green-300"
+            >
+              Active Learning
+            </button>
+            <button
+              onClick={() => handleAnswer(currentScenario.id, 'passive')}
+              className="bg-red-100 hover:bg-red-200 text-red-800 py-4 px-6 rounded-lg font-semibold text-lg transition border-2 border-red-300"
+            >
+              Passive Learning
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const ReflectionScreen = () => {
+    const allAnswered = reflectionAnswers.length === reflectionQuestions.length && 
+                        reflectionAnswers.every(a => a !== undefined);
+
+    return (
+      <div className="max-w-3xl mx-auto p-8">
+        <div className="bg-white rounded-lg shadow-lg p-8">
+          <h2 className="text-3xl font-bold mb-4 text-gray-800">Your Learning Habits</h2>
+          <p className="text-gray-600 mb-6">
+            How often do you do the following? Be honest with yourself!
+          </p>
+
+          <div className="space-y-6 mb-8">
+            {reflectionQuestions.map((question, index) => (
+              <div key={index} className="border-b pb-4">
+                <p className="text-gray-800 mb-3 font-medium">{question}</p>
+                <div className="flex gap-2">
+                  {['rarely', 'sometimes', 'often'].map(option => (
+                    <button
+                      key={option}
+                      onClick={() => handleReflection(index, option)}
+                      className={`flex-1 py-2 px-4 rounded-lg font-medium transition ${
+                        reflectionAnswers[index] === option
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {option.charAt(0).toUpperCase() + option.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <button
+            onClick={() => setCurrentStep('results')}
+            disabled={!allAnswered}
+            className={`w-full py-4 rounded-lg font-semibold text-lg transition ${
+              allAnswered
+                ? 'bg-blue-600 text-white hover:bg-blue-700'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            See Your Results
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const ResultsScreen = () => {
+    const reflectionScore = getReflectionScore();
+    const totalPossible = reflectionQuestions.length;
+    const percentage = (reflectionScore / totalPossible) * 100;
+
+    return (
+      <div className="max-w-3xl mx-auto p-8">
+        <div className="bg-white rounded-lg shadow-lg p-8">
+          <h2 className="text-3xl font-bold mb-6 text-gray-800 text-center">Your Learning Profile</h2>
+          
+          <div className="bg-blue-50 p-6 rounded-lg mb-6 border-2 border-blue-200">
+            <p className="text-center text-lg mb-2 text-gray-700">
+              Your Active Learning Score
+            </p>
+            <p className="text-center text-5xl font-bold text-blue-600 mb-2">
+              {reflectionScore}/{totalPossible}
+            </p>
+            <div className="w-full bg-gray-200 rounded-full h-4">
+              <div 
+                className="bg-blue-600 h-4 rounded-full transition-all"
+                style={{ width: `${percentage}%` }}
+              />
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <h3 className="text-xl font-semibold mb-4 text-gray-800">
+              {percentage >= 80 ? '🌟 Excellent Active Learner!' :
+               percentage >= 60 ? '👍 Good Progress!' :
+               '💡 Room for Growth'}
+            </h3>
+            <p className="text-gray-700 mb-4">
+              {percentage >= 80 ? 
+                "You're already using many active learning strategies! Keep up the great work and continue refining your approach." :
+               percentage >= 60 ?
+                "You're on the right track! Focus on incorporating more active strategies into your daily study routine." :
+                "You have a great opportunity to transform your learning! Small changes in your study habits can make a big difference."}
+            </p>
+          </div>
+
+          <div className="bg-green-50 p-6 rounded-lg border-2 border-green-200 mb-6">
+            <h3 className="text-xl font-semibold mb-4 text-green-800 flex items-center">
+              <Lightbulb className="w-6 h-6 mr-2" />
+              Strategies to Try
+            </h3>
+            <ul className="space-y-3 text-gray-700">
+              <li className="flex items-start">
+                <span className="text-green-600 mr-2 font-bold">→</span>
+                <span><strong>The Feynman Technique:</strong> Explain concepts in simple terms as if teaching a child</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-green-600 mr-2 font-bold">→</span>
+                <span><strong>Spaced Retrieval:</strong> Test yourself regularly without looking at notes</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-green-600 mr-2 font-bold">→</span>
+                <span><strong>Elaborative Interrogation:</strong> Ask yourself "why" and "how" questions about the material</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-green-600 mr-2 font-bold">→</span>
+                <span><strong>Interleaving:</strong> Mix different topics or types of problems in study sessions</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-green-600 mr-2 font-bold">→</span>
+                <span><strong>Concrete Examples:</strong> Create your own examples to illustrate abstract concepts</span>
+              </li>
+            </ul>
+          </div>
+
+          <button
+            onClick={() => {
+              setCurrentStep('intro');
+              setScore(0);
+              setAnsweredQuestions([]);
+              setReflectionAnswers([]);
+            }}
+            className="w-full bg-blue-600 text-white py-4 rounded-lg font-semibold hover:bg-blue-700 transition"
+          >
+            Start Over
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
+      {currentStep === 'intro' && <IntroScreen />}
+      {currentStep === 'scenarios' && <ScenariosScreen />}
+      {currentStep === 'reflection' && <ReflectionScreen />}
+      {currentStep === 'results' && <ResultsScreen />}
+    </div>
+  );
+};
+
+export default ActivePassiveLearning;
